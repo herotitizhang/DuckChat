@@ -1,5 +1,12 @@
 import java.io.Serializable;
 
+/**
+ * ClientRequest is a data structure that holds 
+ * information sent by a client to the server. 
+ * 
+ * @author Xiaowei Xu, Hanxiao Zhang
+ *
+ */
 
 public class ClientRequest implements Serializable {
 	private int identifier = -1; // 32-bit message type identifier
@@ -7,7 +14,7 @@ public class ClientRequest implements Serializable {
 	private byte[] channelName = new byte[32]; //32-byte channel name
 	private byte[] text = new byte[64]; // 64-byte textfield
 	
-	// login, join, leave or who request constructor
+	// constructor for login, join, leave or who request 
 	public ClientRequest(int identifier, byte[] name) {
 		this(identifier);
 		if (identifier == 0) { //login
@@ -19,12 +26,12 @@ public class ClientRequest implements Serializable {
 		}
 	}
 	
-	// list or logout request constructor
+	// constructor for list or logout request 
 	public ClientRequest(int identifier) {
 		this.identifier = identifier;
 	}
 	
-	// say request constructor
+	// constructor for say request 
 	public ClientRequest(int identifier, byte[] name, byte[] field) {
 		this(identifier);
 		this.channelName = name;
@@ -62,6 +69,5 @@ public class ClientRequest implements Serializable {
 	public void setText(byte[] text) {
 		this.text = text;
 	}
-	//java serialization: http://www.tutorialspoint.com/java/java_serialization.htm
 	
 }

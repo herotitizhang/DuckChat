@@ -4,6 +4,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+/**
+ * Utilities class contains methods needed by different classes.
+ * @author Xiaowei Xu, Hanxiao Zhang
+ *
+ */
+
 public class Utilities {
 	
 	// convert an object to a byte array
