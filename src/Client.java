@@ -9,15 +9,17 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class Client {
 	
 	private static DatagramSocket clientSocket = null;
 	private static String currentChannel = "Common";
-	
 	private static InetAddress serverAddress;
-	private static int port;
+	private static int serverPort;
+	private static ExecutorService threadExecutor = Executors.newCachedThreadPool();
 	
 	public static void main (String[] args) {
 		
@@ -26,10 +28,10 @@ public class Client {
 		
 		try {
 			serverAddress = InetAddress.getLocalHost(); // TODO needs a real address (arg[0])
-		} catch (UnknownHostException e1) {
-			e1.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
 		} 
-		port = Integer.parseInt(args[1]);
+		serverPort = Integer.parseInt(args[1]);
 		String username = args[2];
 		
 		
@@ -40,12 +42,14 @@ public class Client {
 			e.printStackTrace();
 		} 
 		
+		// start listening to server's response 
+		ResponseListener responseListener = new ResponseListener(threadExecutor, clientSocket);
+		threadExecutor.execute(responseListener);
+		
 		// send the login request
 		byte[] adjustedUsername = Utilities.fillInByteArray(username, 32);
 		ClientRequest loginRequest = new ClientRequest(0, adjustedUsername);
-		
 		sendClientRequest(loginRequest);
-		
 		
 		// start processing the user's command
 		Scanner console = new Scanner(System.in);
@@ -57,7 +61,7 @@ public class Client {
 	
 	public static void processUserInput(String userInput) {
 		byte[] adjustedUsername, adjustedChannelName, adjustedText;
-		ClientRequest request;
+		ClientRequest request = null;
 		if (userInput.startsWith("/")){
 			if (userInput.startsWith("/exit")) {
 				
@@ -73,13 +77,15 @@ public class Client {
 				
 			} else {
 				System.out.println("Invalid command!");
+				// TODO what to do with an invalid command?
 			}
 		} else { // say request
 			adjustedChannelName = Utilities.fillInByteArray(currentChannel, 32);
 			adjustedText = Utilities.fillInByteArray(userInput, 64);
-			request = new ClientRequest(4, adjustedChannelName, adjustedText);
+			request = new ClientRequest(adjustedChannelName, adjustedText);
 			sendClientRequest(request);
 		}
+		
 	}
 	
 	// send the ClientRequest to the server
@@ -87,7 +93,8 @@ public class Client {
 		byte[] dataToBeSent = Utilities.getByteArray(clientRequest); // serialization occurs
 		try {
 			clientSocket.send(new DatagramPacket(dataToBeSent, dataToBeSent.length, 
-						serverAddress, port) );
+					serverAddress, serverPort));
+			
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		} catch (UnknownHostException e) {
