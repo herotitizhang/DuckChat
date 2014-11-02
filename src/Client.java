@@ -64,9 +64,10 @@ public class Client {
 		ClientRequest request = null;
 		if (userInput.startsWith("/")){
 			if (userInput.startsWith("/exit")) {
-				
+				sendClientRequest(new ClientRequest(1));
+				System.exit(0);
 			} else if (userInput.startsWith("/join")) {
-				
+				sendClientRequest(new ClientRequest(5));
 			} else if (userInput.startsWith("/leave")) {
 				
 			} else if (userInput.startsWith("/list")) {
@@ -94,7 +95,6 @@ public class Client {
 		try {
 			clientSocket.send(new DatagramPacket(dataToBeSent, dataToBeSent.length, 
 					serverAddress, serverPort));
-			
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		} catch (UnknownHostException e) {
