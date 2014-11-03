@@ -8,7 +8,9 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -16,6 +18,7 @@ import java.util.concurrent.Executors;
 public class Client {
 	
 	private static DatagramSocket clientSocket = null;
+	private static ArrayList <String> myChannel = new ArrayList<String> (); 
 	private static String currentChannel = "Common";
 	private static InetAddress serverAddress;
 	private static int serverPort;
@@ -70,12 +73,40 @@ public class Client {
 				sendClientRequest(new ClientRequest(5));
 			} else if (userInput.startsWith("/leave")) {
 				
+				String delims = " ";
+				String[] tokens = userInput.split(delims);
+				String channelName = tokens[1];
+				
+				if(currentChannel.equals( channelName))
+					currentChannel = ""; // need to set ignore in "say request"
+				
+				if(myChannel.contains(channelName)){
+					myChannel.remove(channelName);//remove from alist
+							
+					adjustedChannelName = Utilities.fillInByteArray(channelName, 32);
+					request = new ClientRequest(3, adjustedChannelName);
+					sendClientRequest(request);
+				}				
+				else
+					System.out.println("The channel u want to leave has not been joined!");		
+					
 			} else if (userInput.startsWith("/list")) {
 				sendClientRequest(new ClientRequest(5));
 			} else if (userInput.startsWith("/who")) {
 				byte[] channelName = Utilities.fillInByteArray(userInput.split(" ")[1], 32);
 				sendClientRequest(new ClientRequest(6, channelName));
 			} else if (userInput.startsWith("/switch")) {
+				
+				String delims = " ";
+				String[] tokens = userInput.split(delims);
+				String channelName = tokens[1];
+				
+				if(myChannel.contains(channelName)){
+					currentChannel = channelName ;
+				}
+				else
+					System.out.println("The channel u want to switch has not been joined!");		
+				
 				
 			} else {
 				System.out.println("Invalid command!");

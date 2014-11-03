@@ -1,0 +1,52 @@
+!SESSION 2014-10-19 14:31:17.535 -----------------------------------------------
+eclipse.buildId=4.3.2.M20140221-1700
+java.version=1.7.0_17
+java.vendor=Oracle Corporation
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.standard.product -keyring /Users/weigoxu/.eclipse_keyring -showlocation
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.eclipse.epp.package.standard.product -keyring /Users/weigoxu/.eclipse_keyring -showlocation
+
+!ENTRY org.eclipse.objectteams.otequinox.hook 1 0 2014-10-19 14:31:18.100
+!MESSAGE Created equinox adaptor hook: org.eclipse.objectteams.otequinox.internal.hook.TransformerHook.
+ 	(To disable this and subsequent INFO messages from OT/Equinox set otequinox.debug to WARN or ERROR).
+
+!ENTRY org.eclipse.osgi 2 0 2014-10-19 14:31:18.822
+!MESSAGE The plugin "com.cloudgarden.jigloo" with the version "4.6.6" and location "reference:file:plugins/com.cloudgarden.jigloo_4.6.6/" is an old style Eclipse 2.0 plugin with no OSGi bundle manifest.  Support for Eclipse 2.0 style plugins will be removed in a future release. Refer to the migration guide for details.
+
+!ENTRY org.eclipse.osgi 2 0 2014-10-19 14:31:21.696
+!MESSAGE The plugin "com.cloudgarden.jigloo" with the version "4.6.6" and location "reference:file:plugins/com.cloudgarden.jigloo_4.6.6/" is an old style Eclipse 2.0 plugin with no OSGi bundle manifest.  Support for Eclipse 2.0 style plugins will be removed in a future release. Refer to the migration guide for details.
+
+!ENTRY org.eclipse.objectteams.otequinox.hook 1 0 2014-10-19 14:31:24.611
+!MESSAGE OT/Equinox: connected the transformer service
+
+!ENTRY org.eclipse.objectteams.otequinox.hook 1 0 2014-10-19 14:31:28.160
+!MESSAGE hot-patched a bug in class org.apache.bcel.generic.InstructionHandle
+	see https://bugs.eclipse.org/bugs/show_bug.cgi?id=344350
+
+!ENTRY org.eclipse.objectteams.otequinox.hook 1 0 2014-10-19 14:31:28.161
+!MESSAGE hot-patched a bug in class org.apache.bcel.generic.BranchHandle
+	see https://bugs.eclipse.org/bugs/show_bug.cgi?id=344350
+
+!ENTRY org.eclipse.core.net 1 0 2014-10-19 15:12:13.456
+!MESSAGE System property http.nonProxyHosts has been set to localhost|*.localhost|127.0.0.1 by an external source. This value will be overwritten using the values from the preferences
+
+!ENTRY org.eclipse.jface 2 0 2014-10-19 15:12:13.968
+!MESSAGE Keybinding conflicts occurred.  They may interfere with normal accelerator operation.
+!SUBENTRY 1 org.eclipse.jface 2 0 2014-10-19 15:12:13.968
+!MESSAGE A conflict occurred for ALT+COMMAND+Q P:
+Binding(ALT+COMMAND+Q P,
+	ParameterizedCommand(Command(org.eclipse.php.ui.explorer,PHP Script Explorer,
+		Shows the Script Explorer,
+		Category(org.eclipse.ui.category.views,Views,Commands for opening views,true),
+		org.eclipse.ui.internal.WorkbenchHandlerServiceHandler@4f4ecda7,
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,cocoa,system)
+Binding(ALT+COMMAND+Q P,
+	ParameterizedCommand(Command(org.eclipse.ui.views.showView,Show View,
+		Shows a particular view,
+		Category(org.eclipse.ui.category.views,Views,Commands for opening views,true),
+		org.eclipse.ui.internal.WorkbenchHandlerServiceHandler@3e9fb79e,
+		[Lorg.eclipse.e4.ui.internal.workbench.Parameter;@67d00630,,true),[Lorg.eclipse.core.commands.Parameterization;@a466e8f),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,cocoa,system)
