@@ -71,9 +71,10 @@ public class Client {
 			} else if (userInput.startsWith("/leave")) {
 				
 			} else if (userInput.startsWith("/list")) {
-				
+				sendClientRequest(new ClientRequest(5));
 			} else if (userInput.startsWith("/who")) {
-				
+				byte[] channelName = Utilities.fillInByteArray(userInput.split(" ")[1], 32);
+				sendClientRequest(new ClientRequest(6, channelName));
 			} else if (userInput.startsWith("/switch")) {
 				
 			} else {
@@ -81,10 +82,14 @@ public class Client {
 				// TODO what to do with an invalid command?
 			}
 		} else { // say request
-			adjustedChannelName = Utilities.fillInByteArray(currentChannel, 32);
-			adjustedText = Utilities.fillInByteArray(userInput, 64);
-			request = new ClientRequest(adjustedChannelName, adjustedText);
-			sendClientRequest(request);
+			if (currentChannel.equals("")) {
+				System.out.println("Error: You are not in any channel now!");
+			} else {
+				adjustedChannelName = Utilities.fillInByteArray(currentChannel, 32);
+				adjustedText = Utilities.fillInByteArray(userInput, 64);
+				request = new ClientRequest(adjustedChannelName, adjustedText);
+				sendClientRequest(request);
+			}
 		}
 		
 	}
