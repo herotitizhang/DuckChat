@@ -38,7 +38,7 @@ public class Client {
 		serverPort = Integer.parseInt(args[1]);
 		String username = args[2];
 		
-		
+		myChannels.add(currentChannel);
 		// set up a clientSocket to send and receive data
 		try {
 			clientSocket = new DatagramSocket();
