@@ -29,6 +29,8 @@ public class Client {
 		// TODO add validation methods to Utilities.java and invoke them here
 		// to see if serverAddress and port are valid
 		
+		
+		
 		try {
 			serverAddress = InetAddress.getLocalHost(); // TODO needs a real address (arg[0])
 		} catch (UnknownHostException e) {
@@ -70,7 +72,25 @@ public class Client {
 				sendClientRequest(new ClientRequest(1));
 				System.exit(0);
 			} else if (userInput.startsWith("/join")) {
-				sendClientRequest(new ClientRequest(5));
+				
+				String delims = " ";
+				String[] tokens = userInput.split(delims);
+				String channelName = tokens[1];
+				
+				if(myChannel.contains(channelName))
+					System.out.println("The channel u wanna join is already subscribed");
+				else // if not in arylist
+				{
+					//send request to server.
+					adjustedChannelName = Utilities.fillInByteArray(channelName, 32);
+					request = new ClientRequest(2, adjustedChannelName);
+					sendClientRequest(request);
+					
+					//update active channel and arylist.
+					currentChannel = channelName;
+					myChannel.add(channelName);
+				}
+						
 			} else if (userInput.startsWith("/leave")) {
 				
 				String delims = " ";

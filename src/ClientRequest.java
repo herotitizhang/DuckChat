@@ -18,14 +18,18 @@ public class ClientRequest implements Serializable {
 	public ClientRequest(int identifier, byte[] name) {
 		this(identifier);
 		if (identifier == 0) { //login
-			userName = name;
+			userName = name;}
+		  else if (identifier == 2){//join{
+				
+			
 		} else if (identifier == 3) { //leave
 		
+			
 		} else if (identifier == 6) {// who
 			channelName = name;
 		}
-	}
 	
+	}
 	// constructor for list or logout request 
 	public ClientRequest(int identifier) {
 		this.identifier = identifier;
