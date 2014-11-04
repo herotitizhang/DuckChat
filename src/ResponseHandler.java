@@ -30,7 +30,7 @@ public class ResponseHandler implements Runnable{
 			sb.append(System.getProperty("line.separator")); // get the nextLine character of the OS
 			sb.append("  ");
 			for (int i = 0; i < channelNames.length; i++) {
-				sb.append(new String(channelNames[i]));
+				sb.append(new String(channelNames[i]).trim());
 				sb.append(" ");
 			}
 			System.out.println(sb.toString());

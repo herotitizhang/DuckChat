@@ -120,11 +120,10 @@ public class Client {
 				String[] tokens = userInput.split(delims);
 				String channelName = tokens[1];
 				
-				if(myChannels.contains(channelName)){
+				if(myChannels.contains(channelName))
 					currentChannel = channelName ;
-				}
 				else
-					System.out.println("The channel u want to switch has not been joined!");		
+					System.out.println("You have not joined that channel!");		
 				
 				
 			} else {
