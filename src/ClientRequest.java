@@ -18,14 +18,8 @@ public class ClientRequest implements Serializable {
 	public ClientRequest(int identifier, byte[] name) {
 		this(identifier);
 		if (identifier == 0) { //login
-			userName = name;}
-		  else if (identifier == 2){//join{
-				
-			
-		} else if (identifier == 3) { //leave
-		
-			
-		} else if (identifier == 6) {// who
+			userName = name;
+		} else if (identifier == 2 || identifier == 3 || identifier == 6){ // join, leave or who
 			channelName = name;
 		}
 	

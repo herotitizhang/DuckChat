@@ -10,7 +10,6 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,7 +17,7 @@ import java.util.concurrent.Executors;
 public class Client {
 	
 	private static DatagramSocket clientSocket = null;
-	private static ArrayList <String> myChannel = new ArrayList<String> (); 
+	private static ArrayList <String> myChannels = new ArrayList<String> (); 
 	private static String currentChannel = "Common";
 	private static InetAddress serverAddress;
 	private static int serverPort;
@@ -65,7 +64,7 @@ public class Client {
 	}
 	
 	public static void processUserInput(String userInput) {
-		byte[] adjustedUsername, adjustedChannelName, adjustedText;
+		byte[] adjustedChannelName, adjustedText;
 		ClientRequest request = null;
 		if (userInput.startsWith("/")){
 			if (userInput.startsWith("/exit")) {
@@ -77,7 +76,7 @@ public class Client {
 				String[] tokens = userInput.split(delims);
 				String channelName = tokens[1];
 				
-				if(myChannel.contains(channelName))
+				if(myChannels.contains(channelName))
 					System.out.println("The channel u wanna join is already subscribed");
 				else // if not in arylist
 				{
@@ -88,7 +87,7 @@ public class Client {
 					
 					//update active channel and arylist.
 					currentChannel = channelName;
-					myChannel.add(channelName);
+					myChannels.add(channelName);
 				}
 						
 			} else if (userInput.startsWith("/leave")) {
@@ -100,8 +99,8 @@ public class Client {
 				if(currentChannel.equals( channelName))
 					currentChannel = ""; // need to set ignore in "say request"
 				
-				if(myChannel.contains(channelName)){
-					myChannel.remove(channelName);//remove from alist
+				if(myChannels.contains(channelName)){
+					myChannels.remove(channelName);//remove from alist
 							
 					adjustedChannelName = Utilities.fillInByteArray(channelName, 32);
 					request = new ClientRequest(3, adjustedChannelName);
@@ -121,7 +120,7 @@ public class Client {
 				String[] tokens = userInput.split(delims);
 				String channelName = tokens[1];
 				
-				if(myChannel.contains(channelName)){
+				if(myChannels.contains(channelName)){
 					currentChannel = channelName ;
 				}
 				else
