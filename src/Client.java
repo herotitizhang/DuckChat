@@ -30,11 +30,17 @@ public class Client {
 		
 		
 		
+		//try {
+	//		serverAddress = args[2]; // TODO needs a real address (arg[0])
+	//	} catch (UnknownHostException e) {
+		//	e.printStackTrace();
+		//} 
 		try {
-			serverAddress = InetAddress.getLocalHost(); // TODO needs a real address (arg[0])
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} 
+			serverAddress =InetAddress.getByName( args[0]);
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		serverPort = Integer.parseInt(args[1]);
 		String username = args[2];
 		
@@ -77,7 +83,9 @@ public class Client {
 				String channelName = tokens[1];
 				
 				if(myChannels.contains(channelName))
-					System.out.println("The channel u wanna join is already subscribed");
+				{
+					currentChannel = channelName;	
+				}
 				else // if not in arylist
 				{
 					//send request to server.
@@ -114,7 +122,7 @@ public class Client {
 			} else if (userInput.startsWith("/who")) {
 				byte[] channelName = Utilities.fillInByteArray(userInput.split(" ")[1], 32);
 				sendClientRequest(new ClientRequest(6, channelName));
-			} else if (userInput.startsWith("/switch")) {
+			} else if (userInput.startsWith("/switch")) { // switch request.
 				
 				String delims = " ";
 				String[] tokens = userInput.split(delims);
