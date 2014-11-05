@@ -15,6 +15,7 @@ public class ResponseHandler implements Runnable{
 	}
 	
 	private void handleServerResponse() {
+		System.out.println("got feedback");
 		StringBuilder sb = new StringBuilder();
 		if (serverResponse.getIdentifier() == 0) { // say response
 			sb.append('[');

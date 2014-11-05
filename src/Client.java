@@ -31,12 +31,12 @@ public class Client {
 		
 		
 		try {
-			serverAddress = InetAddress.getLocalHost(); // TODO needs a real address (arg[0])
+			serverAddress = InetAddress.getByName(args[0]); 
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} 
 		serverPort = Integer.parseInt(args[1]);
-		String username = args[2];
+		String userName = args[2];
 		
 		myChannels.add(currentChannel);
 		// set up a clientSocket to send and receive data
@@ -51,10 +51,9 @@ public class Client {
 		threadExecutor.execute(responseListener);
 		
 		// send the login request
-		byte[] adjustedUsername = Utilities.fillInByteArray(username, 32);
-		ClientRequest loginRequest = new ClientRequest(0, adjustedUsername);
-		sendClientRequest(loginRequest);
-		
+		sendClientRequest(ClientRequestGenerator.generateLogInRequest(userName));
+		sendClientRequest(ClientRequestGenerator.generateJoinRequest("Common"));
+
 		// start processing the user's command
 		Scanner console = new Scanner(System.in);
 		while (console.hasNextLine()){
@@ -64,11 +63,10 @@ public class Client {
 	}
 	
 	public static void processUserInput(String userInput) {
-		byte[] adjustedChannelName, adjustedText;
-		ClientRequest request = null;
 		if (userInput.startsWith("/")){
 			if (userInput.startsWith("/exit")) {
-				sendClientRequest(new ClientRequest(1));
+				for (int i = 0; i < myChannels.size(); i++)
+					sendClientRequest(ClientRequestGenerator.generateLeaveRequest(myChannels.get(i)));
 				System.exit(0);
 			} else if (userInput.startsWith("/join")) {
 				
@@ -78,12 +76,10 @@ public class Client {
 				
 				if(myChannels.contains(channelName))
 					System.out.println("The channel u wanna join is already subscribed");
-				else // if not in arylist
+				else // if not in arraylist
 				{
 					//send request to server.
-					adjustedChannelName = Utilities.fillInByteArray(channelName, 32);
-					request = new ClientRequest(2, adjustedChannelName);
-					sendClientRequest(request);
+					sendClientRequest(ClientRequestGenerator.generateJoinRequest(channelName));
 					
 					//update active channel and arylist.
 					currentChannel = channelName;
@@ -96,24 +92,20 @@ public class Client {
 				String[] tokens = userInput.split(delims);
 				String channelName = tokens[1];
 				
-				if(currentChannel.equals( channelName))
+				if(currentChannel.equals(channelName))
 					currentChannel = ""; // need to set ignore in "say request"
 				
 				if(myChannels.contains(channelName)){
 					myChannels.remove(channelName);//remove from alist
-							
-					adjustedChannelName = Utilities.fillInByteArray(channelName, 32);
-					request = new ClientRequest(3, adjustedChannelName);
-					sendClientRequest(request);
+					sendClientRequest(ClientRequestGenerator.generateLeaveRequest(channelName));
 				}				
 				else
 					System.out.println("The channel u want to leave has not been joined!");		
 					
 			} else if (userInput.startsWith("/list")) {
-				sendClientRequest(new ClientRequest(5));
+				sendClientRequest(ClientRequestGenerator.generateListRequest());
 			} else if (userInput.startsWith("/who")) {
-				byte[] channelName = Utilities.fillInByteArray(userInput.split(" ")[1], 32);
-				sendClientRequest(new ClientRequest(6, channelName));
+				sendClientRequest(ClientRequestGenerator.generateWhoRequest(userInput.split(" ")[1]));
 			} else if (userInput.startsWith("/switch")) {
 				
 				String delims = " ";
@@ -134,9 +126,7 @@ public class Client {
 			if (currentChannel.equals("")) {
 				System.out.println("Error: You are not in any channel now!");
 			} else {
-				adjustedChannelName = Utilities.fillInByteArray(currentChannel, 32);
-				adjustedText = Utilities.fillInByteArray(userInput, 64);
-				request = new ClientRequest(adjustedChannelName, adjustedText);
+				byte[] request = ClientRequestGenerator.generateSayRequest(currentChannel, userInput);
 				sendClientRequest(request);
 			}
 		}
@@ -144,8 +134,8 @@ public class Client {
 	}
 	
 	// send the ClientRequest to the server
-	private static void sendClientRequest(ClientRequest clientRequest) {
-		byte[] dataToBeSent = Utilities.getByteArray(clientRequest); // serialization occurs
+	private static void sendClientRequest(byte[] dataToBeSent) {
+		if (dataToBeSent == null) return;
 		try {
 			clientSocket.send(new DatagramPacket(dataToBeSent, dataToBeSent.length, 
 					serverAddress, serverPort));

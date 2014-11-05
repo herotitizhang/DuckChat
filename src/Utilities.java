@@ -68,4 +68,18 @@ public class Utilities {
 		
 	}
 	
+// convert byte array to Int
+	public static int convertByteArrayToInt (byte[] byteArray) 
+	{
+	    return byteArray[3] & 0xFF |(byteArray[2] & 0xFF) << 8 |
+	            (byteArray[1] & 0xFF) << 16 | (byteArray[0] & 0xFF) << 24;
+	}
+
+// convert int to byte array
+	public static byte[] convertIntToByteArray(int num)
+	{
+	    return new byte[] { (byte) ((num >> 24) & 0xFF), (byte) ((num >> 16) & 0xFF),   
+	    		(byte) ((num >> 8) & 0xFF),(byte) (num & 0xFF) };
+	}
+	
 }
