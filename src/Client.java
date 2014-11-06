@@ -30,6 +30,11 @@ public class Client {
 		
 		
 		
+		//try {
+	//		serverAddress = args[2]; // TODO needs a real address (arg[0])
+	//	} catch (UnknownHostException e) {
+		//	e.printStackTrace();
+		//} 
 		try {
 			serverAddress = InetAddress.getByName(args[0]); 
 		} catch (UnknownHostException e) {
@@ -77,7 +82,6 @@ public class Client {
 					String delims = " ";
 					String[] tokens = userInput.split(delims);
 					String channelName = tokens[1];
-					
 					if(myChannels.contains(channelName))
 						System.out.println("You have already joined that channel.");
 					else // if not in arraylist
@@ -116,6 +120,7 @@ public class Client {
 				sendClientRequest(ClientRequestGenerator.generateListRequest());
 			
 			} else if (userInput.startsWith("/who")) {
+
 				if (userInput.split("\\s+").length != 2) {
 					System.out.println("Invalid command!");
 				} else {
