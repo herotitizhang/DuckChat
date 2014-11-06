@@ -64,48 +64,64 @@ public class Client {
 	
 	public static void processUserInput(String userInput) {
 		if (userInput.startsWith("/")){
-			if (userInput.startsWith("/exit")) {
+			if (userInput.equals("/exit")) {
 				for (int i = 0; i < myChannels.size(); i++)
 					sendClientRequest(ClientRequestGenerator.generateLeaveRequest(myChannels.get(i)));
+				System.out.println("Bye.");
 				System.exit(0);
 			} else if (userInput.startsWith("/join")) {
 				
-				String delims = " ";
-				String[] tokens = userInput.split(delims);
-				String channelName = tokens[1];
-				
-				if(myChannels.contains(channelName))
-					System.out.println("The channel u wanna join is already subscribed");
-				else // if not in arraylist
-				{
-					//send request to server.
-					sendClientRequest(ClientRequestGenerator.generateJoinRequest(channelName));
+				if (userInput.split("\\s+").length != 2) {
+					System.out.println("Invalid command!");
+				} else {
+					String delims = " ";
+					String[] tokens = userInput.split(delims);
+					String channelName = tokens[1];
 					
-					//update active channel and arylist.
-					currentChannel = channelName;
-					myChannels.add(channelName);
+					if(myChannels.contains(channelName))
+						System.out.println("You have already joined that channel.");
+					else // if not in arraylist
+					{
+						//send request to server.
+						sendClientRequest(ClientRequestGenerator.generateJoinRequest(channelName));
+						
+						//update active channel and arylist.
+						currentChannel = channelName;
+						myChannels.add(channelName);
+					}
 				}
 						
 			} else if (userInput.startsWith("/leave")) {
 				
-				String delims = " ";
-				String[] tokens = userInput.split(delims);
-				String channelName = tokens[1];
-				
-				if(currentChannel.equals(channelName))
-					currentChannel = ""; // need to set ignore in "say request"
-				
-				if(myChannels.contains(channelName)){
-					myChannels.remove(channelName);//remove from alist
-					sendClientRequest(ClientRequestGenerator.generateLeaveRequest(channelName));
-				}				
-				else
-					System.out.println("The channel u want to leave has not been joined!");		
+				if (userInput.split("\\s+").length != 2) {
+					System.out.println("Invalid command!");
+				} else {
+					String delims = " ";
+					String[] tokens = userInput.split(delims);
+					String channelName = tokens[1];
 					
-			} else if (userInput.startsWith("/list")) {
+					if(currentChannel.equals(channelName))
+						currentChannel = ""; // need to set ignore in "say request"
+					
+					if(myChannels.contains(channelName)){
+						myChannels.remove(channelName); //remove from arraylist
+						sendClientRequest(ClientRequestGenerator.generateLeaveRequest(channelName));
+					}				
+					else
+						System.out.println("You have not joined that channel yet!");		
+				}
+				
+			} else if (userInput.equals("/list")) {
+			
 				sendClientRequest(ClientRequestGenerator.generateListRequest());
+			
 			} else if (userInput.startsWith("/who")) {
-				sendClientRequest(ClientRequestGenerator.generateWhoRequest(userInput.split(" ")[1]));
+				if (userInput.split("\\s+").length != 2) {
+					System.out.println("Invalid command!");
+				} else {
+					sendClientRequest(ClientRequestGenerator.generateWhoRequest(userInput.split(" ")[1]));
+				}
+				
 			} else if (userInput.startsWith("/switch")) {
 				
 				String delims = " ";
@@ -117,14 +133,12 @@ public class Client {
 				else
 					System.out.println("You have not joined that channel!");		
 				
-				
 			} else {
 				System.out.println("Invalid command!");
-				// TODO what to do with an invalid command?
 			}
 		} else { // say request
 			if (currentChannel.equals("")) {
-				System.out.println("Error: You are not in any channel now!");
+				System.out.println("You are not active in any channel now. Switch to a channel first!");
 			} else {
 				byte[] request = ClientRequestGenerator.generateSayRequest(currentChannel, userInput);
 				sendClientRequest(request);
