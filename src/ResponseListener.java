@@ -108,42 +108,89 @@ public class ResponseListener implements Runnable{
 	}
 	
 	private void handleListResponse(byte[] listResponse) {
-		System.out.println(listResponse[0]);
 		
-		int lastByte = 4;
-		for (lastByte = 4; lastByte < 8; lastByte++) {
-			if (listResponse[lastByte] == 0) break;
-		}
-		
-		int numOfChannels = 0;
-		for (int i = 0; lastByte > 4; i++, lastByte--) {
-			numOfChannels += (int) (listResponse[lastByte] * Math.pow(10, i));
-		}
-		
-		
+		// get the number of channels
+		int numOfChannels = listResponse[4];
+
+		// add all channels
+		ArrayList<String> channelNames = new ArrayList<String>();
+		for (int i = 0; i < numOfChannels; i++) {
+			int lastByteOfChannelName;
+			for (lastByteOfChannelName = 8+i*32; lastByteOfChannelName <8+(i+1)*32; lastByteOfChannelName++ ){
+				if (listResponse[lastByteOfChannelName] == 0) break;
+			}
+			if (lastByteOfChannelName == 8+(i+1)*32) lastByteOfChannelName --;
+			lastByteOfChannelName --;
 			
-		
-		// error message
-		byte[] errorMessage = new byte[64];
-		for (int i = 4; i < 68; i++) {
-			errorMessage[i-4] = listResponse[i];
+			byte[] channelName = new byte[lastByteOfChannelName-(8+i*32)+1];
+			for (int j = 8+i*32; j <= lastByteOfChannelName; j++) {
+				channelName[j-(8+i*32)] = listResponse[j]; 
+			}
+			channelNames.add(new String(channelName));
 		}
-//		System.out.println(new String(errorMessage));
+		
+		// print all channels
+		StringBuilder sb = new StringBuilder();
+		sb.append("Existing channels:");
+		sb.append(System.getProperty("line.separator")); // get the nextLine character of the OS
+		sb.append("  ");
+		for (int i = 0; i < channelNames.size(); i++) {
+			sb.append(new String(channelNames.get(i)).trim());
+			sb.append("  ");
+		}
+		System.out.println(sb.toString());
+		
 	}
 	
 	private void handleWhoResponse(byte[] whoResponse) {
-//		System.out.println(errorResponse[0]);
-//		// error message
-//		byte[] errorMessage = new byte[64];
-//		for (int i = 4; i < 68; i++) {
-//			errorMessage[i-4] = errorResponse[i];
-//		}
-//		System.out.println(new String(errorMessage));
+		// get the number of channels
+		int numOfChannels = whoResponse[4];
+
+		// get channel name
+		int lastByteOfChannelName;
+		for (lastByteOfChannelName = 8; lastByteOfChannelName < 40; lastByteOfChannelName++ ){
+			if (whoResponse[lastByteOfChannelName] == 0) break;
+		}
+		if (lastByteOfChannelName == 40) lastByteOfChannelName --;
+		lastByteOfChannelName --;
+		
+		byte[] channelName = new byte[lastByteOfChannelName-8+1];
+		for (int i = 8; i <= lastByteOfChannelName; i++) {
+			channelName[i-9] = whoResponse[i]; 
+		}
+		
+		// add all users
+		ArrayList<String> userNames = new ArrayList<String>();
+		for (int i = 0; i < numOfChannels; i++) {
+			int lastByteOfUserName;
+			for (lastByteOfUserName = 40+i*32; lastByteOfUserName <40+(i+1)*32; lastByteOfUserName++ ){
+				if (whoResponse[lastByteOfUserName] == 0) break;
+			}
+			if (lastByteOfUserName == 40+(i+1)*32) lastByteOfUserName --;
+			lastByteOfUserName --;
+			
+			byte[] userName = new byte[lastByteOfUserName-(40+i*32)+1];
+			for (int j = 40+i*32; j <= lastByteOfUserName; j++) {
+				userName[j-(40+i*32)] = whoResponse[j]; 
+			}
+			userNames.add(new String(userName));
+		}
+		
+		// print all channels
+		StringBuilder sb = new StringBuilder();
+		sb.append("Users on channel ").append(new String(channelName)).append(":");
+		sb.append(System.getProperty("line.separator")); // get the nextLine character of the OS
+		sb.append("  ");
+		for (int i = 0; i < userNames.size(); i++) {
+			sb.append(new String(userNames.get(i)).trim());
+			sb.append("  ");
+		}
+		System.out.println(sb.toString());
+		
 	}
 	
 	private void handleErrorResponse(byte[] errorResponse) {
 
-		System.out.println("This is an error message");
 		int lastByteOfErrorMsg;
 		for (lastByteOfErrorMsg = 4; lastByteOfErrorMsg < 68; lastByteOfErrorMsg++ ){
 			if (errorResponse[lastByteOfErrorMsg] == 0) break;
