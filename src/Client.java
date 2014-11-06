@@ -25,22 +25,16 @@ public class Client {
 	
 	public static void main (String[] args) {
 		
-		// TODO add validation methods to Utilities.java and invoke them here
-		// to see if serverAddress and port are valid
-		
-		
-		
-		//try {
-	//		serverAddress = args[2]; // TODO needs a real address (arg[0])
-	//	} catch (UnknownHostException e) {
-		//	e.printStackTrace();
-		//} 
 		try {
 			serverAddress = InetAddress.getByName(args[0]); 
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} 
 		serverPort = Integer.parseInt(args[1]);
+		if (serverPort < 1024 || serverPort > 65535) {
+			System.out.println("Invalid port number!");
+			System.exit(1);
+		}
 		String userName = args[2];
 		
 		myChannels.add(currentChannel);
