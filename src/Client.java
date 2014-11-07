@@ -1,15 +1,16 @@
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Console;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Reader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -22,8 +23,14 @@ public class Client {
 	private static InetAddress serverAddress;
 	private static int serverPort;
 	private static ExecutorService threadExecutor = Executors.newCachedThreadPool();
+	public static StringBuilder buffer = new StringBuilder();
 	
 	public static void main (String[] args) {
+		
+		if (args.length !=3){
+			System.out.println("need 2 args");
+			System.exit(0);
+		}
 		
 		try {
 			serverAddress = InetAddress.getByName(args[0]); 
@@ -54,30 +61,82 @@ public class Client {
 		sendClientRequest(ClientRequestGenerator.generateJoinRequest("Common"));
 
 		// start processing the user's command
-		Scanner console = new Scanner(System.in);
-		while (console.hasNextLine()){
-			String userInput = console.nextLine();
-			processUserInput(userInput);
+		terminalRawMode();
+	
+		Console console = System.console();
+		Reader reader = console.reader();
+				
+		while(true) {
+			try {		
+                if ( System.in.available() != 0 ) {
+                    int c = reader.read();
+                    
+                    if ( c == 0x1B )
+                    	break; //esc for test
+                    
+                    
+                char ch = ((char) c);
+                
+                if(c==0x7F&&buffer.length()==0)	{} //backspace when no input.
+                else	buffer.append(ch);
+                
+                String cmd = buffer.toString().trim();         
+            
+                for(int i=0; i<buffer.length(); i++) 
+                    System.out.print("\b \b");
+                
+                
+             // press backspace              
+               if(c == 0x7F && buffer.length()>1){ 
+                	buffer.deleteCharAt(buffer.length()-1);
+                	buffer.deleteCharAt(buffer.length()-1);
+                
+                	System.out.print(buffer);                
+                }
+               
+            // press enter
+                else if (c == 0x0D )
+                {
+                	if(buffer.length()==1) buffer.deleteCharAt(0);
+                	else{
+                	System.out.println(buffer);
+                	processUserInput(cmd);
+                	buffer.delete(0, buffer.length());
+                	}  	
+                }
+               
+               //normal char        
+                else
+                	System.out.print(buffer);                      
+                }
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+		
+		terminalCookedMode();
 	}
+
 	
 	public static void processUserInput(String userInput) {
 		if (userInput.startsWith("/")){
 			if (userInput.equals("/exit")) {
 				for (int i = 0; i < myChannels.size(); i++)
 					sendClientRequest(ClientRequestGenerator.generateLeaveRequest(myChannels.get(i)));
-				System.out.println("Bye.");
+				printInRawMode("Bye.");
+				terminalCookedMode();
 				System.exit(0);
 			} else if (userInput.startsWith("/join")) {
 				
 				if (userInput.split("\\s+").length != 2) {
-					System.out.println("Invalid command!");
+					printInRawMode("Invalid command!");
 				} else {
 					String delims = " ";
 					String[] tokens = userInput.split(delims);
 					String channelName = tokens[1];
 					if(myChannels.contains(channelName))
-						System.out.println("You have already joined that channel.");
+						printInRawMode("You have already joined that channel.");
 					else // if not in arraylist
 					{
 						//send request to server.
@@ -92,7 +151,7 @@ public class Client {
 			} else if (userInput.startsWith("/leave")) {
 				
 				if (userInput.split("\\s+").length != 2) {
-					System.out.println("Invalid command!");
+					printInRawMode("Invalid command!");
 				} else {
 					String delims = " ";
 					String[] tokens = userInput.split(delims);
@@ -106,7 +165,7 @@ public class Client {
 						sendClientRequest(ClientRequestGenerator.generateLeaveRequest(channelName));
 					}				
 					else
-						System.out.println("You have not joined that channel yet!");		
+						printInRawMode("You have not joined that channel yet!");		
 				}
 				
 			} else if (userInput.equals("/list")) {
@@ -116,7 +175,7 @@ public class Client {
 			} else if (userInput.startsWith("/who")) {
 
 				if (userInput.split("\\s+").length != 2) {
-					System.out.println("Invalid command!");
+					printInRawMode("Invalid command!");
 				} else {
 					sendClientRequest(ClientRequestGenerator.generateWhoRequest(userInput.split(" ")[1]));
 				}
@@ -130,14 +189,14 @@ public class Client {
 				if(myChannels.contains(channelName))
 					currentChannel = channelName ;
 				else
-					System.out.println("You have not joined that channel!");		
+					printInRawMode("You have not joined that channel!");		
 				
 			} else {
-				System.out.println("Invalid command!");
+				printInRawMode("Invalid command!");
 			}
 		} else { // say request
 			if (currentChannel.equals("")) {
-				System.out.println("You are not active in any channel now. Switch to a channel first!");
+				printInRawMode("You are not active in any channel now. Switch to a channel first!");
 			} else {
 				byte[] request = ClientRequestGenerator.generateSayRequest(currentChannel, userInput);
 				sendClientRequest(request);
@@ -160,4 +219,31 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
+	
+	// used for raw mode
+	private static void terminalRawMode() {
+        try {
+            String[] cmd = {"/bin/sh", "-c", "stty raw </dev/tty"};
+            Runtime.getRuntime().exec(cmd).waitFor();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+	//cooked mode
+    private static void terminalCookedMode() {
+        try {
+            String [] cmd = new String[] {"/bin/sh", "-c", "stty sane </dev/tty"};
+            Runtime.getRuntime().exec(cmd).waitFor();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private static void printInRawMode(String print){
+    	
+    	System.out.println(print);
+    	for(int i=0; i<print.length();i++)
+    		System.out.print("\b \b");
+    	
+    }
 }

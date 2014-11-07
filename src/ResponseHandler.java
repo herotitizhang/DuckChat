@@ -67,6 +67,9 @@ public class ResponseHandler implements Runnable{
 		}
 		
 		// get the String
+		for(int i=0;i<Client.buffer.length();i++)
+			System.out.print("\b \b");
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append('[');
 		sb.append(new String(channelName));
@@ -75,6 +78,11 @@ public class ResponseHandler implements Runnable{
 		sb.append("]: ");
 		sb.append(new String(textField));
 		System.out.println(sb.toString());
+		
+		for(int i=0;i<sb.length();i++)
+			System.out.print("\b \b");
+		
+		System.out.print(Client.buffer);
 		
 	}
 	
@@ -101,6 +109,9 @@ public class ResponseHandler implements Runnable{
 		}
 		
 		// print all channels
+		for(int i=0;i<Client.buffer.length();i++)
+			System.out.print("\b \b");
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append("Existing channels:");
 		sb.append(System.getProperty("line.separator")); // get the nextLine character of the OS
@@ -110,6 +121,11 @@ public class ResponseHandler implements Runnable{
 			sb.append("  ");
 		}
 		System.out.println(sb.toString());
+		
+		for(int i=0;i<sb.length();i++)
+			System.out.print("\b \b");
+		
+		System.out.print(Client.buffer);
 		
 	}
 	
@@ -148,6 +164,9 @@ public class ResponseHandler implements Runnable{
 		}
 		
 		// print all channels
+		for(int i=0;i<Client.buffer.length();i++)
+			System.out.print("\b \b");
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append("Users on channel ").append(new String(channelName)).append(":");
 		sb.append(System.getProperty("line.separator")); // get the nextLine character of the OS
@@ -157,6 +176,11 @@ public class ResponseHandler implements Runnable{
 			sb.append("  ");
 		}
 		System.out.println(sb.toString());
+		
+		for(int i=0;i<sb.length();i++)
+			System.out.print("\b \b");
+		
+		System.out.print(Client.buffer);
 		
 	}
 	
@@ -174,7 +198,17 @@ public class ResponseHandler implements Runnable{
 			errorMsg[i-4] = errorResponse[i]; 
 		}
 		
-		System.out.println(new String(errorMsg));
+		
+		for(int i=0;i<Client.buffer.length();i++)
+			System.out.print("\b \b");
+		
+		String err =new String(errorMsg);
+		System.out.println(err);
+		
+		for(int i=0;i<err.length();i++)
+			System.out.print("\b \b");
+		
+		System.out.print(Client.buffer);
 	}
 
 }
