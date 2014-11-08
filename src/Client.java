@@ -28,7 +28,7 @@ public class Client {
 	public static void main (String[] args) {
 		
 		if (args.length !=3){
-			System.out.println("need 2 args");
+			System.out.println("need 3 args");
 			System.exit(0);
 		}
 		
@@ -74,29 +74,34 @@ public class Client {
                     if ( c == 0x1B )
                     	break; //esc for test
                     
+                   
                     
                 char ch = ((char) c);
-                
-                if(c==0x7F&&buffer.length()==0)	{} //backspace when no input.
+               
+                if(c==0x7F&&buffer.length()==0)	{System.out.print("\b \b");System.out.print("\b \b");} //backspace when no input.
                 else	buffer.append(ch);
                 
                 String cmd = buffer.toString().trim();         
             
                 for(int i=0; i<buffer.length(); i++) 
-                    System.out.print("\b \b");
+                   System.out.print("\b \b");
                 
-                
+               
              // press backspace              
                if(c == 0x7F && buffer.length()>1){ 
                 	buffer.deleteCharAt(buffer.length()-1);
                 	buffer.deleteCharAt(buffer.length()-1);
-                
-                	System.out.print(buffer);                
+                	
+                	System.out.print("\b \b");
+                	System.out.print("\b \b");
+                	System.out.print(buffer);    
+                	
                 }
                
             // press enter
                 else if (c == 0x0D )
-                {
+                {	
+                	System.out.print("\b \b");
                 	if(buffer.length()==1) buffer.deleteCharAt(0);
                 	else{
                 	System.out.println(buffer);
@@ -107,7 +112,9 @@ public class Client {
                
                //normal char        
                 else
-                	System.out.print(buffer);                      
+                	System.out.print(buffer);  
+               
+               
                 }
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
