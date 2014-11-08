@@ -65,7 +65,14 @@ public class Client {
 	
 		Console console = System.console();
 		Reader reader = console.reader();
-				
+		
+		String osName = System.getProperty("os.name");
+		boolean ix = true;
+		if (osName.equals("Linux")) 
+			ix = true;
+		else if(osName.equals("Mac OS X"))
+			ix = false;
+		
 		while(true) {
 			try {		
                 if ( System.in.available() != 0 ) {
@@ -78,7 +85,13 @@ public class Client {
                     
                 char ch = ((char) c);
                
-                if(c==0x7F&&buffer.length()==0)	{System.out.print("\b \b");System.out.print("\b \b");} //backspace when no input.
+                if(c==0x7F&&buffer.length()==0)	{
+                	if(ix){
+                		System.out.print("\b \b");
+                		System.out.print("\b \b");
+                	}
+                	
+                } //backspace when no input.
                 else	buffer.append(ch);
                 
                 String cmd = buffer.toString().trim();         
@@ -92,8 +105,11 @@ public class Client {
                 	buffer.deleteCharAt(buffer.length()-1);
                 	buffer.deleteCharAt(buffer.length()-1);
                 	
+                	if(ix){
                 	System.out.print("\b \b");
                 	System.out.print("\b \b");
+                	}
+                	
                 	System.out.print(buffer);    
                 	
                 }
@@ -101,7 +117,9 @@ public class Client {
             // press enter
                 else if (c == 0x0D )
                 {	
-                	System.out.print("\b \b");
+                	if(ix)
+                		System.out.print("\b \b");
+                	
                 	if(buffer.length()==1) buffer.deleteCharAt(0);
                 	else{
                 	System.out.println(buffer);
@@ -113,8 +131,7 @@ public class Client {
                //normal char        
                 else
                 	System.out.print(buffer);  
-               
-               
+                             
                 }
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
